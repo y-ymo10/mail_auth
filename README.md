@@ -1,0 +1,79 @@
+# 簡易確認コード送信ライブラリ
+[![CI](https://github.com/yymo10/mail_auth/actions/workflows/main.yml/badge.svg)](https://github.com/yymo10/mail_auth/actions/workflows/main.yml)
+## 概要
+### メールアドレスの所有者の確認
+- メールアドレスの登録時など、登録者がメールアドレスの所有者であることを確認する為に登録するメール宛に確認コードを送信し、確認コードを入力する事で、所有者である事を認証する。
+## 前提条件
+- ウェブサーバ上にSMTPサーバが構築されていること
+- PHP 4.0.6, PHP 5, PHP 7, PHP 8
+- mb_send_mailモジュールが使用できること
+
+### lib/mail_auth.php
+- ```mail_auth.php```を``` require_once() ```で読み込むことで使用可能になる。
+### 確認コード送信と入力フォームのサンプルコード
+``` ./index.php ```
+```php
+<?php
+session_start();　// セッションを使用するので、session_start（）を必ず設定
+require_once('./lib/mail_auth.php');
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <?php
+    // Authオブジェクトインスタンス
+    // 第一引数で桁数を指定
+    $pn = new Auth(6);
+    
+    // 確認コードのメール送信
+    $pn->send();
+    ?>
+    <form action="./check.php" method="post">
+    <input type="text" name="keys" id="" >
+    <?php $pn->Create_CSRF(); //CSRFトークンをinputに組み込んでを生成 ?> 
+    <input type="submit" value="認証">
+    </form>
+</body>
+</html>
+```
+
+### 確認コードのチェックサンプル
+``` ./check.php ```
+```php
+<?php
+       session_start();// セッションを使用するので、session_start（）を必ず設定
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <?php
+        require_once('./lib/mail_auth.php');
+        //Checkオブジェクトインスタンス
+        $check = new Check();
+        //確認コードの取得
+        $val = $_POST['keys'];
+        //CSRF対策トークンの取得
+        $token = $_POST['token'];
+        //Authメンバ関数で確認コードとCSRF対策トークンの認証を行う。成功すればtrue、失敗でfalse
+        if($check->Auth($val,$token)===true){
+            print("成功");
+        }else{
+            print("失敗");
+        }
+        
+    ?>
+</body>
+</html>
+```
