@@ -1,5 +1,7 @@
 # 簡易確認コード送信ライブラリ
 [![CI](https://github.com/yymo10/mail_auth/actions/workflows/main.yml/badge.svg)](https://github.com/yymo10/mail_auth/actions/workflows/main.yml)
+## License
+### Apache License
 ## 概要
 ### メールアドレスの所有者の確認
 - メールアドレスの登録時など、登録者がメールアドレスの所有者であることを確認する為に登録するメール宛に確認コードを送信し、確認コードを入力する事で、所有者である事を認証する。
@@ -7,7 +9,29 @@
 - ウェブサーバ上にSMTPサーバが構築されていること
 - PHP 4.0.6, PHP 5, PHP 7, PHP 8
 - mb_send_mailモジュールが使用できること
-
+## 導入
+1. ダウンロード
+    - Git
+        ```bash
+        git clone https://github.com/y-ymo10/mail_auth.git
+        ```
+    - Zipファイルのダウンロード
+    
+        [Zipファイルダウンロード](https://github.com/y-ymo10/mail_auth/archive/refs/heads/master.zip)
+    
+        ```
+        unzip master.zip
+        ```
+2. session_start()とmail_auth.phpの読み込み設定
+    - session_start()をphpプログラムの中で最上位で設定
+    - mail_auth.phpをrequire_once()で読み込み
+    ```php
+    <?php 
+    session_start();
+    require_once('./lib/mail_auth.php');
+    ?>
+    ```
+4. 
 ### lib/mail_auth.php
 - ```mail_auth.php```を``` require_once() ```で読み込むことで使用可能になる。
 ### 確認コード送信と入力フォームのサンプルコード
